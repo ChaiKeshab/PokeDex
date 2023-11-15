@@ -8,6 +8,11 @@ const App = () => {
 
         <Route path="/" element={<Home />} />
 
+        {/* <Route exact path='/'>
+          <Route index element={<Home />} />
+          <Route exact path={':id'} element={<Home />} />
+        </Route> */}
+
       </Routes>
     </>
   )

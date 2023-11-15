@@ -1,31 +1,59 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
-import { getSpecificPokemonAPI } from '../../APIs/pokemonApi'
 import { upperFirst } from '../../utils/upperFirst'
+import { pokeball } from '../../assets/index'
+import typeColor from '../../data/typeColor'
+import { useState } from 'react'
 
-const PokemonGrid = ({ name, url }) => {
+const PokemonGrid = ({ name, image, secondaryImage, type = [], err }) => {
 
-    //  Example: https://pokeapi.co/api/v2/pokemon/1/
-    // const getSpecificPokemonQuery = useQuery({
-    //     queryKey: ['getSpecificPokemon', url],
-    //     queryFn: () => getSpecificPokemonAPI(url)
-    // })
+    const displayImage = image ? image : secondaryImage
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    if (!name || !type || err) return (
+        <div className='skeleton p-6 rounded-3xl' >
+            <img className='p-1 object-contain object-center w-full h-36' src={pokeball} alt={name} />
+        </div >
+    )
+
+    //  type received from array and typeColor object may have uppercase letter problem if error encountered. 
+    //  Use the upperFirst function at that point
+
+    let typeColorChoice
+    for (let name in typeColor) {
+        if (type[0] === name) {
+            typeColorChoice = typeColor[name]
+        }
+    }
 
     return (
-        <div className='flex p-6 rounded-3xl bg-green-400'>
-
+        <div
+            style={{ backgroundColor: typeColorChoice }}
+            className={`flex p-6 rounded-3xl`}
+        >
             <div className='w-1/2 space-y-3'>
-                <h1 className='text-2xl font-bold text-slate-100'>{upperFirst(name)}</h1>
+                <h1 className='text-left text-2xl font-bold text-slate-100'>{upperFirst(name)}</h1>
 
                 <div className='space-y-1 text-white'>
-                    <div className='text-sm w-fit py-0.5 px-2 rounded-3xl bg-[rgba(255,255,255,0.2)]' >Grass</div>
-                    <div className='text-sm w-fit py-0.5 px-2 rounded-3xl bg-[rgba(255,255,255,0.2)]' >Poison</div>
+                    {type?.map((elm, index) => (
+                        <div key={index} className='text-sm w-fit py-0.5 px-2 rounded-3xl bg-[rgba(255,255,255,0.2)]' >{upperFirst(elm)}</div>
+                    ))}
                 </div>
 
             </div>
 
             <div className='w-1/2'>
-                {/* <img className='p-1 w-full h-36' src={getSpecificPokemonQuery.data?.sprites.other.dream_world.front_default} alt="" /> */}
-                {/* <img className='w-full h-full' src={getSpecificPokemonQuery.data?.sprites.other["official-artwork"].front_default} alt="" /> */}
+                {!imageLoaded ? (
+                    <div className='p-1 object-contain object-center w-full h-36'>
+                        <img
+                            style={{ visibility: 'hidden' }}
+                            onLoad={() => setImageLoaded(true)}
+                            src={displayImage}
+                            alt='pokemon'
+                        />
+                        <img className='p-1 w-full h-36' src={pokeball} alt='loading' />
+                    </div>
+                ) : (
+                    <img className='p-1 w-full h-36' src={displayImage} alt={name} />
+                )}
             </div>
 
         </div>

@@ -14,8 +14,8 @@ import {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // staleTime: 1000 * 60 * 5,
-      // cacheTime: 1000 * 60 * 5
+      staleTime: 1000 * 60 * 2,
+      cacheTime: 1000 * 60 * 2
     }
   },
 })
@@ -25,12 +25,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
     <QueryClientProvider client={queryClient}>
 
-      {/* <Provider store={store}> */}
-      <BrowserRouter>
-        <App />
-        <ReactQueryDevtools />
-      </BrowserRouter>
-      {/* </Provider> */}
+      <Provider store={store}>
+        <BrowserRouter>
+          <App />
+          <ReactQueryDevtools />
+        </BrowserRouter>
+      </Provider>
 
     </QueryClientProvider>
 
