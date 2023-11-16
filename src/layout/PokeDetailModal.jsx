@@ -20,7 +20,8 @@ const PokeDetailModal = ({
     weight,
     secondaryImage,
     id,
-    evolutionInfo
+    evolutionInfo,
+    setSearchExecute
 }) => {
 
     const dispatch = useDispatch()
@@ -88,7 +89,11 @@ const PokeDetailModal = ({
             <div className='text-white p-6 pb-0 w-full gap-2 flex flex-col justify-center items-center'>
 
                 <div className='flex justify-between w-full'>
-                    <Button className='' onClick={() => dispatch(isModalClose())}>
+                    <Button className='' onClick={() => {
+                        setSearchExecute('')
+                        dispatch(isModalClose())
+                    }}
+                    >
                         <FaArrowLeft className='text-base' />
                     </Button>
 

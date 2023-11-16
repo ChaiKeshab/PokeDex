@@ -296,12 +296,19 @@ const Home = () => {
 
 
 
-
+            {searchExecute && searchDataStatus === 'pending' &&
+                <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+                    <PokeBallSpinner />
+                </div>
+            }
             {toggleOpen && (
                 <>
                     <div
                         className="BACKGROUND z-10 fixed bg-black opacity-20 h-screen w-screen top-0 left-0 overflow-hidden"
-                        onClick={() => dispatch(isModalClose())}
+                        onClick={() => {
+                            setSearchExecute('')
+                            dispatch(isModalClose())
+                        }}
                     ></div>
 
                     {pokeDetailData.error ?
@@ -316,6 +323,7 @@ const Home = () => {
                             secondaryImage={pokeDetailData?.sprites?.front_default}
                             evolutionInfo={extractPokemonNames(evolData.data)}
                             {...pokeDetailData}
+                            setSearchExecute={setSearchExecute}
                         />
                     }
                 </>
