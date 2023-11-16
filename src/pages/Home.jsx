@@ -146,7 +146,7 @@ const Home = () => {
                     value={searchName}
                     onKeyDown={handleSubmit}
                     onChange={(e) => setSearchName(e.target.value)}
-                    className='p-2 w-full border rounded-lg md:w-2/3'
+                    className='p-2 w-[300px] border rounded-lg md:w-[500px]'
                 />
 
                 <div className='flex flex-col gap-2 items-center'>
