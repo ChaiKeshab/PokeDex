@@ -14,14 +14,19 @@ const NavigateButtons = ({ setSerchParams, currOffset, allPokemon }) => {
     }
 
     const handleNext = () => {
-        scrollToTop()
-        const adjustedOffsetNext = (currOffset + 20) > (allPokemon.count - 9) ? (allPokemon.count - 9) : (currOffset + 20)
+        scrollToTop();
+        const totalItems = allPokemon.count;
+        const itemsPerPage = 20;
+        const maxOffset = totalItems - (totalItems % itemsPerPage); // Calculate the maximum offset considering the last page
+
+        const adjustedOffsetNext = currOffset + itemsPerPage > maxOffset ? maxOffset : currOffset + itemsPerPage;
+
         setSerchParams(prev => {
-            const params = new URLSearchParams(prev)
-            params.set('offset', adjustedOffsetNext.toString())
-            return params
-        })
-    }
+            const params = new URLSearchParams(prev);
+            params.set('offset', adjustedOffsetNext.toString());
+            return params;
+        });
+    };
 
     return (
         <div className='flex justify-center gap-3 mt-6'>
@@ -32,7 +37,7 @@ const NavigateButtons = ({ setSerchParams, currOffset, allPokemon }) => {
                 disabled={currOffset <= 0}
             />
             <Button
-                disabled={currOffset >= (allPokemon?.count - 9)}
+                disabled={currOffset >= (allPokemon?.count - (allPokemon?.count % 20))}
                 onClick={handleNext}
                 className={'py-2 px-4 min-w-[90px] rounded-lg bg-gray-300'}
                 label={'Next'}
