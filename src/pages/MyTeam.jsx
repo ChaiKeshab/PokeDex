@@ -20,7 +20,6 @@ const MyTeam = () => {
             type: type
         }));
     };
-    console.log(isShowMenu)
 
 
     const addToMyTeam = (pika) => {

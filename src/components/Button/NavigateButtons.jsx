@@ -3,42 +3,42 @@ import { scrollToTop } from '../../utils/scrollToTop'
 
 const NavigateButtons = ({ setSerchParams, currOffset, allPokemon }) => {
 
-    let adjustedOffsetPrev
     const handlePrev = () => {
         scrollToTop()
-        adjustedOffsetPrev = (currOffset - 20) < 0 ? 0 : (currOffset - 20)
+        const adjustedOffsetPrev = (currOffset - 20) < 0 ? 0 : (currOffset - 20)
         setSerchParams(prev => {
-            prev.set('offset', adjustedOffsetPrev)
-            return prev
+            const params = new URLSearchParams(prev)
+            params.set('offset', adjustedOffsetPrev.toString())
+            return params
         })
     }
 
-    let adjustedOffsetNext
     const handleNext = () => {
         scrollToTop()
-        const adjustedOffsetNext = (currOffset + 20) > allPokemon.count ? allPokemon.count : (currOffset + 20)
+        const adjustedOffsetNext = (currOffset + 20) > (allPokemon.count - 9) ? (allPokemon.count - 9) : (currOffset + 20)
         setSerchParams(prev => {
-            prev.set('offset', adjustedOffsetNext)
-            return prev
+            const params = new URLSearchParams(prev)
+            params.set('offset', adjustedOffsetNext.toString())
+            return params
         })
     }
 
     return (
         <div className='flex justify-center gap-3 mt-6'>
             <Button
-                disabled={adjustedOffsetPrev <= 0 ? true : false}
-                // disabled={true}
                 onClick={handlePrev}
                 className={'py-2 px-4 min-w-[90px] rounded-lg bg-gray-300'}
                 label={'Previous'}
+                disabled={currOffset <= 0}
             />
             <Button
-                disabled={adjustedOffsetNext >= allPokemon?.count ? true : false}
+                disabled={currOffset >= (allPokemon?.count - 9)}
                 onClick={handleNext}
                 className={'py-2 px-4 min-w-[90px] rounded-lg bg-gray-300'}
                 label={'Next'}
             />
-        </div>)
+        </div>
+    )
 }
 
 export default NavigateButtons

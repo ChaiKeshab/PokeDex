@@ -4,7 +4,6 @@ import Input from './Input/Input'
 import PokemonGrid from './GridItems/PokemonGrid'
 import Spinner from './Spinner/Spinner'
 import PokeBallSpinner from './Spinner/PokeBallSpinner'
-import Dropdown from './Dropdown/Dropdown'
 import HomeSkeleton from './Skeleton/HomeSkeleton'
 import DataTable from './Table/DataTable'
 
@@ -15,7 +14,6 @@ export {
     PokemonGrid,
     Spinner,
     PokeBallSpinner,
-    Dropdown,
     HomeSkeleton,
     DataTable
 };
