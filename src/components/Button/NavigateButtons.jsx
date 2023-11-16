@@ -27,6 +27,7 @@ const NavigateButtons = ({ setSerchParams, currOffset, allPokemon }) => {
         <div className='flex justify-center gap-3 mt-6'>
             <Button
                 disabled={adjustedOffsetPrev <= 0 ? true : false}
+                // disabled={true}
                 onClick={handlePrev}
                 className={'py-2 px-4 min-w-[90px] rounded-lg bg-gray-300'}
                 label={'Previous'}

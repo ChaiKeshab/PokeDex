@@ -3,7 +3,7 @@ import { pokeball } from '../../assets/index'
 import typeColor from '../../data/typeColor'
 import { useState } from 'react'
 
-const PokemonGrid = ({ name, image, secondaryImage, type = [], err }) => {
+const PokemonGrid = ({ name, image, secondaryImage, type = [], err, className }) => {
 
     const displayImage = image ? image : secondaryImage
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -27,7 +27,7 @@ const PokemonGrid = ({ name, image, secondaryImage, type = [], err }) => {
     return (
         <div
             style={{ backgroundColor: typeColorChoice }}
-            className={`flex p-6 rounded-3xl`}
+            className={`flex p-6 rounded-3xl ${className}`}
         >
             <div className='w-1/2 space-y-3'>
                 <h1 className='text-left text-2xl font-bold text-slate-100'>{upperFirst(name)}</h1>
@@ -42,17 +42,17 @@ const PokemonGrid = ({ name, image, secondaryImage, type = [], err }) => {
 
             <div className='w-1/2'>
                 {!imageLoaded ? (
-                    <div className='p-1 object-contain object-center w-full h-36'>
+                    <>
                         <img
-                            style={{ visibility: 'hidden' }}
+                            className='hidden'
                             onLoad={() => setImageLoaded(true)}
                             src={displayImage}
                             alt='pokemon'
                         />
-                        <img className='p-1 w-full h-36' src={pokeball} alt='loading' />
-                    </div>
+                        <img className='p-1 object-contain object-center w-full aspect-square' src={pokeball} alt='loading' />
+                    </>
                 ) : (
-                    <img className='p-1 w-full h-36' src={displayImage} alt={name} />
+                    <img className='p-1 object-contain object-center w-full aspect-square' src={displayImage} alt={name} />
                 )}
             </div>
 

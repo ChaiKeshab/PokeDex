@@ -4,8 +4,9 @@ import App from './App.jsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { store } from './redux/store.js'
+import { store, persistor } from './redux/store.js'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { PersistGate } from 'redux-persist/integration/react'
 import {
   QueryClient,
   QueryClientProvider,
@@ -14,8 +15,8 @@ import {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 2,
-      cacheTime: 1000 * 60 * 2
+      staleTime: 1000 * 60 * 1,
+      // cacheTime: 1000 * 60 * 2
     }
   },
 })
@@ -26,10 +27,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
 
       <Provider store={store}>
-        <BrowserRouter>
-          <App />
-          <ReactQueryDevtools />
-        </BrowserRouter>
+        <PersistGate loading={null} persistor={persistor}>
+          <BrowserRouter>
+            <App />
+            <ReactQueryDevtools />
+          </BrowserRouter>
+        </PersistGate>
       </Provider>
 
     </QueryClientProvider>

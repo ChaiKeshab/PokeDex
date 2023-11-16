@@ -3,10 +3,12 @@ import { formatJoin } from '../utils/formatJoin'
 import { FaArrowLeft } from "react-icons/fa";
 import typeColor from '../data/typeColor'
 import { Button, DataTable } from '../components/index'
-import { useDispatch } from 'react-redux';
 import { isModalClose } from '../redux/index'
 import { useState } from 'react';
 import { pokeball } from '../assets/index'
+
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { addPoke, } from '../redux/index'
 
 const PokeDetailModal = ({
     abilities = [],
@@ -15,10 +17,27 @@ const PokeDetailModal = ({
     sprites,
     stats,
     types = [],
-    weight
+    weight,
+    secondaryImage,
+    id,
 }) => {
 
     const dispatch = useDispatch()
+
+    const addToTeamData = {
+        abilities,
+        height,
+        name,
+        sprites,
+        stats,
+        types,
+        weight,
+        secondaryImage,
+        id
+    }
+
+    const mainImage = sprites.other.dream_world.front_default
+    const displayImage = mainImage ? mainImage : secondaryImage
 
     const isOptions = {
         about: 'about',
@@ -61,9 +80,17 @@ const PokeDetailModal = ({
 
             <div className='text-white p-6 pb-0 w-full gap-2 flex flex-col justify-center items-center'>
 
-                <Button className='self-start justify-self-start' onClick={() => dispatch(isModalClose())}>
-                    <FaArrowLeft className='text-base' />
-                </Button>
+                <div className='flex justify-between w-full'>
+                    <Button className='' onClick={() => dispatch(isModalClose())}>
+                        <FaArrowLeft className='text-base' />
+                    </Button>
+
+                    <Button
+                        className='px-2 py-1 rounded-lg bg-blue-400 focus:bg-white focus:text-black'
+                        onClick={() => dispatch(addPoke(addToTeamData))}
+                        label={'Add to Team list'}
+                    />
+                </div>
 
                 <h1 className='text-3xl'>{upperFirst(name)}</h1>
 
@@ -75,7 +102,7 @@ const PokeDetailModal = ({
 
                 <div className='relative -bottom-6'>
                     {!sprites ? <img className='p-1 object-contain object-center w-full aspect-square' src={pokeball} alt={name} /> :
-                        <img className='aspect-square p-1 h-36' src={sprites.other.dream_world.front_default} alt={name} />
+                        <img className='aspect-square p-1 h-36' src={displayImage} alt={name} />
                     }
                 </div>
             </div>

@@ -14,7 +14,7 @@ const Button = ({
         <button
             disabled={disabled}
             type={type}
-            className={`${className} cursor-pointer transition-all duration-150 disabled:bg-slate-300 disabled:text-black`}
+            className={`${className} ${!disabled && 'cursor-pointer'} transition-all duration-150 disabled:bg-slate-200 disabled:text-black`}
             onClick={onClick}
         >
 
