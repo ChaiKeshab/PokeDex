@@ -45,7 +45,7 @@ const MyTeam = () => {
 
                     <Button
                         onClick={() => dispatch(removeAllPoke())}
-                        className={'px-2 py-1 ml-2 mb-3 rounded-lg bg-red-400 focus:bg-gray-300'}
+                        className={'px-2 py-1 ml-2 mb-3 rounded-lg bg-red-400 text-white focus:bg-gray-300'}
                         label={'Clear list'}
                     />
 

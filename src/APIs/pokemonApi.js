@@ -27,7 +27,7 @@ export const getSpecificPokemonAPI = async (url) => {
     catch (error) {
         return {
             error: true,
-            message: `Failed to fetch data for pokemon. Please try again later.`,
+            message: `Failed to fetch data for specific pokemon. Please try again later.`,
             originalError: error,
         };
     }
@@ -44,6 +44,38 @@ export const getGenerationAPI = async (id = 1) => {
         return {
             error: true,
             message: `Failed to fetch data for generation ${id}. Please try again later.`,
+            originalError: error,
+        };
+    }
+}
+
+export const getPokeSpeciesAPI = async (name) => {
+
+    try {
+        const url = `${baseURL}/pokemon-species/${name}`
+        const response = await axios.get(url)
+        return response.data
+    }
+    catch (error) {
+        return {
+            error: true,
+            message: `Failed to fetch data for ${name} species. Please try again later.`,
+            originalError: error,
+        };
+    }
+}
+
+export const getSearchPokeAPI = async (name) => {
+
+    try {
+        const url = `${baseURL}/pokemon/${name}`
+        const response = await axios.get(url)
+        return response.data
+    }
+    catch (error) {
+        return {
+            error: true,
+            message: `Failed to fetch data for search: ${name}. Please enter correct pokemon name/id.`,
             originalError: error,
         };
     }

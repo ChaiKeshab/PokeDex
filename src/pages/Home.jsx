@@ -1,16 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom';
 
 import { useQuery, useQueries } from '@tanstack/react-query'
-import { getPokemonAPI, getSpecificPokemonAPI, getGenerationAPI } from '../APIs/pokemonApi'
+import {
+    getPokemonAPI,
+    getSpecificPokemonAPI,
+    getGenerationAPI,
+    getPokeSpeciesAPI,
+    getSearchPokeAPI
+} from '../APIs/pokemonApi'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { isModalClose, isModalOpen } from '../redux/index'
 
-import { Button, PokemonGrid, PokeBallSpinner, NavigateButtons } from '../components/index'
+import { Button, PokemonGrid, PokeBallSpinner, NavigateButtons, Input } from '../components/index'
 import PokeDetailModal from '../layout/PokeDetailModal'
 import { logo } from '../assets/index'
 import { scrollToTop } from '../utils/scrollToTop'
+import { extractPokemonNames } from '../utils/evolutionFormat'
 
 
 const Home = () => {
@@ -28,6 +35,9 @@ const Home = () => {
 
     const [pokeDetailData, setpokeDetailData] = useState({})
     const [genSelect, setGenSelect] = useState('All')
+    const [speciesName, setSpeciesName] = useState('')
+    const [searchName, setSearchName] = useState('')
+    const [searchExecute, setSearchExecute] = useState('')
 
 
     //*****************************************API CALL************************************************/
@@ -38,10 +48,11 @@ const Home = () => {
     })
 
 
-    let genId = genSelect === 'All' ? 1 : genSelect
+    const genId = genSelect === 'All' ? null : genSelect
     const { data: genPokemon, status: genPokeStatus } = useQuery({
         queryKey: ['genFilter', genId],
         queryFn: () => getGenerationAPI(genId),
+        enabled: !!genId
     })
 
     const baseURL = import.meta.env.VITE_BASE_URL
@@ -64,13 +75,58 @@ const Home = () => {
             : [],
     })
 
+
+    const { data: evolURL, status: allEvolutionStatus } = useQuery({
+        queryKey: ['evolURL', speciesName],
+        queryFn: () => getPokeSpeciesAPI(speciesName),
+        select: (evol) => evol.evolution_chain.url,
+        enabled: !!speciesName
+    })
+
+    const evolData = useQuery({
+        queryKey: ['evolData', evolURL],
+        queryFn: () => getSpecificPokemonAPI(evolURL),
+        enabled: !!evolURL,
+    })
+
+
+    const { data: searchData, status: searchDataStatus } = useQuery({
+        queryKey: ['search', searchExecute],
+        queryFn: () => getSearchPokeAPI(searchExecute),
+        enabled: !!searchExecute,
+    })
+
+    /**
+     * for search bar, 2 api needs to be called
+     * first: /pokemon/name and second: evolURl
+     * feed both data in PokeDetailModal component
+     * call when? setup Search bar. user inputs data and press ENTER, we call api
+     * search accepts name and number. convert data to lowercase and trim
+     * 
+     *
+     */
     //****************************************************************************************************/
 
+    const handleSubmit = (e) => {
+        if (e.key === 'Enter' || e.type === 'click') {
+            e.preventDefault();
+            setSearchExecute(searchName.trim().toLowerCase());
+            setSpeciesName(searchName.trim().toLowerCase())
+            setSearchName('')
+        }
+    }
 
     const handleModalTrigger = (details) => {
         dispatch(isModalOpen())
         setpokeDetailData(details)
     }
+
+    useEffect(() => {
+        if (searchData) {
+            dispatch(isModalOpen())
+            setpokeDetailData(searchData)
+        }
+    }, [searchData, dispatch]);
 
 
     return (
@@ -81,6 +137,17 @@ const Home = () => {
                     <img className='w-60' src={logo} alt="PokeDex" />
                     <div className='absolute bottom-5 left-1/2 -translate-x-1/2 mx-auto w-24 border-2 border-red-500' />
                 </div>
+
+                <Input
+                    id={"search"}
+                    type="text"
+                    name="user"
+                    placeholder={"Search..."}
+                    value={searchName}
+                    onKeyDown={handleSubmit}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    className='p-2 w-full border rounded-lg md:w-2/3'
+                />
 
                 <div className='flex flex-col gap-2 items-center'>
                     <h1 className='font-semibold text-blue-700 text-lg'>Select Generation:</h1>
@@ -187,7 +254,8 @@ const Home = () => {
 
             <div className='grid mt-10 px-2 gap-5 grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:px-5'>
 
-                {allPokeStatus === "pending" || genPokeStatus === "pending" ?
+                {(allPokeStatus === "pending" && genSelect === "All") ||
+                    (genPokeStatus === "pending" && genSelect !== "All") ?
 
                     <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
                         <PokeBallSpinner />
@@ -198,7 +266,10 @@ const Home = () => {
                             <Button
                                 disabled={pika.data?.error}
                                 key={index}
-                                onClick={() => handleModalTrigger(pika.data)}
+                                onClick={() => {
+                                    handleModalTrigger(pika.data)
+                                    setSpeciesName(pika.data?.name)
+                                }}
                             >
 
                                 <PokemonGrid
@@ -215,7 +286,7 @@ const Home = () => {
 
 
 
-            {allPokeStatus === "pending" || genSelect == 'All' &&
+            {allPokeStatus === "success" && genSelect === 'All' &&
                 <NavigateButtons
                     setSerchParams={setSerchParams}
                     currOffset={currOffset}
@@ -233,10 +304,20 @@ const Home = () => {
                         onClick={() => dispatch(isModalClose())}
                     ></div>
 
-                    <PokeDetailModal
-                        secondaryImage={pokeDetailData?.sprites?.front_default}
-                        {...pokeDetailData}
-                    />
+                    {pokeDetailData.error ?
+                        <div
+                            className='z-20 bg-red-500 w-full p-6 text-gray-100 rounded-lg fixed shadow-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                                md:w-fit'
+                        >
+                            {pokeDetailData.message}
+                        </div>
+                        :
+                        <PokeDetailModal
+                            secondaryImage={pokeDetailData?.sprites?.front_default}
+                            evolutionInfo={extractPokemonNames(evolData.data)}
+                            {...pokeDetailData}
+                        />
+                    }
                 </>
             )}
 
@@ -260,4 +341,18 @@ export default Home
 /**
  * "?offset=40&limit=20" query parameters controls the next and previous.
  * 
+ */
+
+/**
+ * gen api gives name and species url
+ * what we need: when modal is toggled, we send id/name and using that, we call species api of that id/name
+ * using that, we consecutively call another api within the results and extract the required data
+ * 
+ * so api is to be called for single pokemon only when id/name is provided.
+ * 
+ * existing potentially usable api: gen api does give name and url but what we want is not the url
+ * we can craft it with the name, NO NEED FOR GEN API. 
+ * 
+ * setup a species api ready to take name/id and then call.
+ * after that, consecutively call another api from the results
  */

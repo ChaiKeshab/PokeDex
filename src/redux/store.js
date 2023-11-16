@@ -7,6 +7,13 @@ import storage from 'redux-persist/lib/storage'
 const persistConfig = {
     key: 'root',
     storage,
+    stateReconciler: (inboundState, originalState) => {
+        // Ensure isModalOpen is always set to false on rehydration
+        if (inboundState) {
+            return { ...originalState, modalToggleReducer: { isModalOpen: false } };
+        }
+        return originalState;
+    },
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

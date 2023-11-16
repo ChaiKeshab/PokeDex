@@ -7,7 +7,7 @@ import { isModalClose } from '../redux/index'
 import { useState } from 'react';
 import { pokeball } from '../assets/index'
 
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addPoke, } from '../redux/index'
 
 const PokeDetailModal = ({
@@ -20,6 +20,7 @@ const PokeDetailModal = ({
     weight,
     secondaryImage,
     id,
+    evolutionInfo
 }) => {
 
     const dispatch = useDispatch()
@@ -36,7 +37,7 @@ const PokeDetailModal = ({
         id
     }
 
-    const mainImage = sprites.other.dream_world.front_default
+    const mainImage = sprites?.other?.dream_world.front_default
     const displayImage = mainImage ? mainImage : secondaryImage
 
     const isOptions = {
@@ -49,7 +50,7 @@ const PokeDetailModal = ({
 
     let typeColorChoice
     for (let name in typeColor) {
-        if (types[0].type.name === name) {
+        if (types[0]?.type.name === name) {
             typeColorChoice = typeColor[name]
         }
     }
@@ -64,12 +65,18 @@ const PokeDetailModal = ({
         { label: 'Abilities', value: formatJoin(allAbilitiesArr) },
     ]
 
-    const pokeStatData = stats.map(elm => {
+    const pokeStatData = stats?.map(elm => {
         return (
             { label: upperFirst(elm.stat.name), value: elm.base_stat, }
         )
     })
 
+    const pokeEvolData = evolutionInfo?.map((elm, index) => {
+        return {
+            label: index + 1,
+            value: upperFirst(elm),
+        };
+    });
 
     return (
         <div
@@ -92,7 +99,9 @@ const PokeDetailModal = ({
                     />
                 </div>
 
-                <h1 className='text-3xl'>{upperFirst(name)}</h1>
+                {name &&
+                    <h1 className='text-3xl'>{upperFirst(name)}</h1>
+                }
 
                 <div className='flex gap-1 text-white'>
                     {types?.map((elm, index) => (
@@ -149,7 +158,7 @@ const PokeDetailModal = ({
 
                 {isOptionChoose === isOptions.evolve &&
                     <DataTable
-                        dataArray={pokeAboutData}
+                        dataArray={pokeEvolData}
                     />
                 }
 
