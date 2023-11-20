@@ -2,23 +2,17 @@ import { useState } from 'react'
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import {
-    isPokeListPanelOpen,
     isPokeListPanelClose,
-    createTeam,
     updateTeam,
-    deleteTeam
 } from '../redux/index'
 
 import { upperFirst } from '../utils/upperFirst'
-
 import { Button, Input } from '../components/index'
-import PokeListPanel from './PokeListPanel'
 
 import { useQuery } from '@tanstack/react-query'
 import { getPokemonAPI } from '../APIs/pokemonApi'
 
-import { MdDeleteSweep } from "react-icons/md";
-
+import { RiDeleteBack2Fill } from "react-icons/ri";
 
 
 const TeamPanel = ({ id }) => {
@@ -30,10 +24,9 @@ const TeamPanel = ({ id }) => {
     const initialArray = myTeamListArr.filter(team => team.id === id)[0].pokemons
 
     const initialDisplay = initialArray.filter(team => team !== null)
-    console.log(initialDisplay)
+
     const [searchName, setSearchName] = useState('')
-    const [pokeTeamArr, setpokeTeamArr] = useState(initialDisplay)
-    const [currentIndex, setCurrentIndex] = useState(0)
+    console.log(initialArray, initialDisplay)
 
     const { data: allPokemon } = useQuery({
         queryKey: ['catchThemALl', 0],
@@ -58,22 +51,16 @@ const TeamPanel = ({ id }) => {
 
     const handleSavePoke = (selectedPoke) => {
 
-        //for display
+        const currIndex = initialArray.findIndex((poke) => poke === null);
 
-        setpokeTeamArr([
-            ...pokeTeamArr,
-            selectedPoke
-        ])
+        console.log(currIndex)
 
         const updatedArray = initialArray.map((poke, index) => {
-            if (index === currentIndex) {
+            if (index === currIndex) {
                 return selectedPoke;
             }
             return poke;
         });
-
-        setCurrentIndex(i => i + 1)
-        console.log(updatedArray)
 
         dispatch(updateTeam({
             "id": id,
@@ -81,19 +68,18 @@ const TeamPanel = ({ id }) => {
         }))
     }
 
-    /**
-    poke from pokeList on click, add that pokemon in an array
-    the array format should be:
 
-    length 6, filled with null initilly, when select a pokemon, fill the index 0 with that pokemon and rest 5 null.
-    the length will always be 6 regardless of provided pokeData or not.
+    const deleteSelectedPoke = (delIndex) => {
 
-    for each fill, dispatch the updated data.
+        const filteredArray = initialArray.filter((poke, index) => index !== delIndex)
+        const updatedArray = [...filteredArray, null]
 
-    the null data should always be at the end when adding new data or filtering and defined pokemon should be at first
+        dispatch(updateTeam({
+            "id": id,
+            "pokemons": updatedArray,
+        }));
 
-     */
-
+    };
 
     return (
         <>
@@ -119,12 +105,24 @@ const TeamPanel = ({ id }) => {
                 </div>
 
                 <div className=' border-t border-b py-2 justify-center items-center flex flex-col gap-1'>
-                    {pokeTeamArr?.map((name, i) => (
-                        <Button
+                    {initialDisplay?.map((name, i) => (
+
+                        <div
                             key={`${name}${i}`}
-                            label={name}
-                            className={"px-4 text-black py-1 w-full rounded-md bg-gray-300"}
-                        />
+                            className='flex w-full'
+                        >
+                            <Button
+                                label={upperFirst(name)}
+                                className={"px-4 text-black py-1 w-full rounded-l-md bg-gray-300 "}
+                            />
+
+                            <Button
+                                onClick={() => deleteSelectedPoke(i)}
+                                className={"px-2 border-l text-xl border-gray-300 text-black py-1 rounded-r-md bg-gray-300 hover:text-white hover:bg-gray-600"}
+                            >
+                                <RiDeleteBack2Fill />
+                            </Button>
+                        </div>
                     ))}
 
                 </div>
@@ -134,7 +132,7 @@ const TeamPanel = ({ id }) => {
                     {filteredPoke?.map((name) => (
 
                         <Button
-                            disabled={pokeTeamArr.length >= 6 ? true : false}
+                            disabled={initialDisplay.length >= 6 ? true : false}
                             key={name}
                             onClick={() => handleSavePoke(name)}
                             label={upperFirst(name)}
