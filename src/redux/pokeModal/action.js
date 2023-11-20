@@ -13,3 +13,11 @@ export const isTeamPanelOpen = () => ({
 export const isTeamPanelClose = () => ({
     type: 'IS_TEAM_PANEL_CLOSE'
 })
+
+export const isPokeListPanelOpen = () => ({
+    type: 'IS_POKE_LIST_PANEL_OPEN'
+})
+
+export const isPokeListPanelClose = () => ({
+    type: 'IS_POKE_LIST_PANEL_CLOSE'
+})

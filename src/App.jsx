@@ -14,6 +14,7 @@ const App = () => {
 
       <TeamPanel />
 
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/myteam" element={<MyTeam />} />

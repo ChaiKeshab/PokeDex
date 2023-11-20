@@ -1,7 +1,8 @@
 
 const initialState = {
     isModalOpen: false,
-    isTeamPanelOpem: false
+    isTeamPanelOpem: false,
+    isPokeListPanelOpen: false
 }
 
 const modalReducer = (state = initialState, action) => {
@@ -29,6 +30,18 @@ const modalReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isTeamPanelOpem: false
+            }
+
+        case "IS_POKE_LIST_PANEL_OPEN":
+            return {
+                ...state,
+                isPokeListPanelOpen: true
+            }
+
+        case "IS_POKE_LIST_PANEL_CLOSE":
+            return {
+                ...state,
+                isPokeListPanelOpen: false
             }
 
         default:

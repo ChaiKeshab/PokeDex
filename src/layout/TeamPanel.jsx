@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import {
     isTeamPanelClose,
+    isPokeListPanelOpen,
+    isPokeListPanelClose,
     createTeam,
     updateTeam,
     deleteTeam
@@ -18,11 +20,14 @@ import { FaEdit } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
 import { MdDeleteSweep } from "react-icons/md";
 
+import PokeListPanel from './PokeListPanel'
+
 
 const TeamPanel = () => {
 
     const dispatch = useDispatch()
     const toggleTeamPanel = useSelector((state) => state.modalToggleReducer.isTeamPanelOpem)
+    const togglePokeListPanel = useSelector((state) => state.modalToggleReducer.isPokeListPanelOpen)
 
     const myTeamListArr = useSelector((state) => state.myTeamReducer.teamList, shallowEqual);
 
@@ -46,7 +51,6 @@ const TeamPanel = () => {
     })
 
     const allPokeName = allPokeData?.results.map((poke) => poke.name)
-    // console.log(allPokeName)
 
 
 
@@ -78,15 +82,21 @@ const TeamPanel = () => {
     }
 
 
+    const PokeListPanelControl = () => {
+        dispatch(isPokeListPanelOpen())
+
+    }
+
 
     return (
         <>
+
+
             <div
                 className={`${toggleTeamPanel ? "translate-x-0" : "translate-x-full"} 
                 bg-white px-3 z-[15] fixed right-0 top-0 pb-10 h-screen w-full shadow-2xl transform ease-in-out duration-500
                 md:px-6 md:w-2/3 lg:w-[50%] xl:1/3`}
             >
-
 
                 <div className="h-[9vh] flex justify-between border-b mb-2">
 
@@ -104,162 +114,85 @@ const TeamPanel = () => {
                 <div className="h-[80vh] overflow-auto flex flex-col gap-4">
 
 
-                    {console.log(myTeamListArr)}
                     {myTeamListArr?.map((team) => (
 
-                        <Button
-                            key={team.id}
-                            onClick={() => setselectedTeamId(team.id)}
-                            className='group cursor-default focus:bg-gray-200 hover:bg-gray-100 flex flex-col border border-gray-400 gap-2 p-2'
-                        >
+                        <React.Fragment key={team.id}>
 
-                            <div
-                                className={'relative flex justify-start border-b border-gray-300 items-center gap-2'}
+                            {togglePokeListPanel &&
+                                <PokeListPanel
+                                    id={selectedTeamId}
+                                />
+                            }
+
+                            <Button
+                                onClick={() => setselectedTeamId(team.id)}
+                                className='group cursor-default focus:bg-gray-200 hover:bg-gray-100 flex flex-col border border-gray-400 gap-2 p-2'
                             >
-                                <h2 className="">{team.teamName}</h2>
 
-                                {showInputField[team.id] &&
-                                    <>
+                                <div
+                                    className={'relative flex justify-start border-b border-gray-300 items-center gap-2'}
+                                >
+                                    <h2 className="">{team.teamName}</h2>
 
-                                        {/* 
-                                        show input field of only the selected input
-                                        curently: all input field are shown
-                                        so show? true/false for each input field.
+                                    {showInputField[team.id] &&
+                                        <>
 
-                                        create an object for each input field to store it's condition details
+                                            <Input
+                                                id={team.id}
+                                                placeholder={team.teamName}
+                                                value={teamInput[team.id] || ''}
 
-                                        {
-                                            "id": id
-                                            value: e.target.value,
-                                            display: false 
-                                        }
+                                                onChange={(e) => setTeamInput({
+                                                    ...teamInput,
+                                                    [team.id]: e.target.value,
+                                                })}
 
-                                        after confirming the changed the data (through Enterkey / remove Foucs)
-                                        need to update it to redux
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        handleSaveInput(team.id)
+                                                    }
+                                                }}
+                                                className={`focus:z-30 w-64 bg-gray-100 absolute top-0 left-0`}
+                                            />
 
-                                        for the teamlist of chosen id, change the teamName
-                                        
 
-                                                const newTeam = {
-                                                "id": id,
-                                                "teamName": "New team",
-                                                "pokemons": [null, null, null, null, null, null]
-                                            }
+                                            <div
+                                                className="BACKGROUND opacity-100 top-0 right-0 z-20 w-screen fixed h-screen overflow-hidden"
+                                                onClick={() => handleSaveInput(team.id)}
+                                            ></div>
+                                        </>
+                                    }
 
-                                        for teamName change, just dispatch the newTeam name data
-                                        
-                                        */}
-
-                                        <Input
-                                            id={team.id}
-                                            placeholder={team.teamName}
-                                            value={teamInput[team.id] || ''}
-
-                                            onChange={(e) => setTeamInput({
-                                                ...teamInput,
-                                                [team.id]: e.target.value,
+                                    <label className='hover:cursor-pointer' htmlFor={team.id}>
+                                        <FaEdit
+                                            onClick={() => setShowInputField({
+                                                ...showInputField,
+                                                [team.id]: true
                                             })}
-
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    handleSaveInput(team.id)
-                                                }
-                                            }}
-                                            className={`focus:z-30 w-64 bg-gray-100 absolute top-0 left-0`}
                                         />
+                                    </label>
+                                </div>
 
+
+                                <div className='flex gap-2 w-full justify-evenly'>
+                                    {team.pokemons?.map((poke, index) => (
 
                                         <div
-                                            className="BACKGROUND opacity-100 top-0 right-0 z-20 w-screen fixed h-screen overflow-hidden"
-                                            onClick={() => handleSaveInput(team.id)}
-                                        ></div>
-                                    </>
-                                }
+                                            key={index}
+                                            className=' border hover:border-gray-400 w-full aspect-[9/10]'
+                                            onClick={() => PokeListPanelControl()}
+                                        >
+                                            <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
+                                        </div>
 
-                                <label className='hover:cursor-pointer' htmlFor={team.id}>
-                                    <FaEdit
-                                        onClick={() => setShowInputField({
-                                            ...showInputField,
-                                            [team.id]: true
-                                        })}
-                                    />
-                                </label>
-                            </div>
+                                    ))}
+                                </div>
 
+                            </Button>
 
-
-                            {/* 
-                            editNameIcon on click: open an input field on top of displayed name with
-                            displayed name as ||value. onKeyDown or onBlur, update the teamName and 
-                            close / hide the input field.
-
-                            */}
-
-
-
-                            <div className='flex gap-2 w-full justify-evenly'>
-                                {team.pokemons?.map((poke, index) => (
-                                    <div
-                                        key={index}
-                                        className=' border hover:border-gray-400 w-full aspect-[9/10]'
-                                    // onClick={ }
-                                    >
-                                        <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* 
-                            
-                            each pokeSpace on click, should open the pokeList menu.
-                            PokeList.onClick => should add that pokemon to the array.
-                            multiple same selection should be allowed.
-                            max selectable per team = 6
-                            
-                            
-                            Pokelist now has two row:
-                            
-                            - Selected pokemon at top (pinned)
-                            - selectable pokemon 
-
-                            selected pokemon is array of selected pokemon with numbering
-                            the array can contain clones
-
-                            the array is mapped in the pokespace
-
-                            to remove pokemon: use the selected pokemon bar
-                            the selected pokemon bar will have selected pokemon with different bg
-                            selected pokemon on click at right side will remove that poke from array:
-                            comes will delete button at right side
-                            UI: youtube search and mic combo
-
-                            New problem: second sidebar with responsive!? impossible in vertical screen
-
-                            */}
-
-                        </Button>
-
+                        </React.Fragment>
                     ))}
 
-
-
-
-
-                    {/* Edit scrollbar design */}
-                    {/* Button onClick: add an obj in array with null default values which will be filled by user
-                    - make each team parent as button and make them selectable. when selected, their id is noted
-                      and it's used for deleting the team. the delete button being only one at the bottom of page
-                      -Genshin impact reference
-
-                      repalce close icon with confim and move it at the bottom along side the delete
-
-                      team name edit is a modal with input-field
-
-                      to add image: click on an empty image field: then a sidebar will appear with list
-                      of all the pokemon and a search bar at the top that filters with .includes
-                      only shows name for now to minimize apicall and UI
-                    
-                    */}
 
                     <Button
                         onClick={handleAddNewTeam}
