@@ -11,7 +11,7 @@ import {
 } from '../APIs/pokemonApi'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { isModalClose, isModalOpen } from '../redux/index'
+import { isModalClose, isModalOpen, isTeamPanelClose, isTeamPanelOpen } from '../redux/index'
 
 import { Button, PokemonGrid, PokeBallSpinner, NavigateButtons, Input } from '../components/index'
 import PokeDetailModal from '../layout/PokeDetailModal'
@@ -23,6 +23,10 @@ import { extractPokemonNames } from '../utils/evolutionFormat'
 const Home = () => {
 
     const dispatch = useDispatch()
+    const toggleOpen = useSelector((state) => state.modalToggleReducer.isModalOpen)
+    const toggleTeamPanel = useSelector((state) => state.modalToggleReducer.isTeamPanelOpem)
+
+
     const [searchParams, setSerchParams] = useSearchParams({
         offset: 0,
         limit: 20
@@ -31,7 +35,6 @@ const Home = () => {
     const currOffset = parseInt(searchParams.get('offset'), 10) || 0;
     // const currLimit = parseInt(searchParams.get('limit'), 10) || 20
 
-    const toggleOpen = useSelector((state) => state.modalToggleReducer.isModalOpen)
 
     const [pokeDetailData, setpokeDetailData] = useState({})
     const [genSelect, setGenSelect] = useState('All')
@@ -66,10 +69,10 @@ const Home = () => {
 
     const pikadata = useQueries({
         queries: pokeURL ?
-            pokeURL.map((poke) => {
+            pokeURL.map((url) => {
                 return {
-                    queryKey: ["pikachu", poke],
-                    queryFn: () => getSpecificPokemonAPI(poke),
+                    queryKey: ["pikachu", url],
+                    queryFn: () => getSpecificPokemonAPI(url),
                 }
             })
             : [],
@@ -149,103 +152,112 @@ const Home = () => {
                     className='p-2 w-[300px] border rounded-lg md:w-[500px]'
                 />
 
-                <div className='flex flex-col gap-2 items-center'>
+                <div className='flex flex-col gap-2 items-center w-full'>
                     <h1 className='font-semibold text-blue-700 text-lg'>Select Generation:</h1>
 
 
+                    <div className='relative flex flex-col gap-3 items-center justify-center w-full'>
+                        <div className='shadow-[0_0_11px_rgba(0,0,0,0.3)]'>
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('All')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === 'All' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'All'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('1')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '1' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'I'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('2')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '2' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'II'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('3')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '3' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'III'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('4')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '4' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'IV'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('5')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '5' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'V'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('6')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '6' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'VI'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('7')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '7' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'VII'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('8')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '8' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'VIII'}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setGenSelect('9')
+                                    scrollToTop()
+                                }}
+                                className={`${genSelect === '9' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
+                                font-bold py-1 px-2 md:py-2 md:px-4`}
+                                label={'IX'}
+                            />
+                        </div>
 
-                    <div className='shadow-[0_0_11px_rgba(0,0,0,0.3)]'>
                         <Button
-                            onClick={() => {
-                                setGenSelect('All')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === 'All' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'All'}
+                            onClick={() => dispatch(isTeamPanelOpen())}
+                            className={'lg:absolute right-0 lg:-translate-x-full bg-gray-300 rounded-lg py-1 px-2 md:py-2 md:px-4'}
+                            label={'Create a team'}
                         />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('1')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '1' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'I'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('2')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '2' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'II'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('3')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '3' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'III'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('4')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '4' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'IV'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('5')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '5' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'V'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('6')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '6' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'VI'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('7')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '7' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'VII'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('8')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '8' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'VIII'}
-                        />
-                        <Button
-                            onClick={() => {
-                                setGenSelect('9')
-                                scrollToTop()
-                            }}
-                            className={`${genSelect === '9' ? 'bg-gray-300 text border-b border-b-blue-800' : ''}
-                                font-bold py-1 px-2 md:py-2 md:px-4`}
-                            label={'IX'}
-                        />
+
                     </div>
+
                 </div>
             </div>
 
@@ -257,7 +269,7 @@ const Home = () => {
                 {(allPokeStatus === "pending" && genSelect === "All") ||
                     (genPokeStatus === "pending" && genSelect !== "All") ?
 
-                    <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+                    <div className='fixed top-1/2 left-1/2 -translate-x-1/2'>
                         <PokeBallSpinner />
                     </div>
                     : (
@@ -301,6 +313,7 @@ const Home = () => {
                     <PokeBallSpinner />
                 </div>
             }
+
             {toggleOpen && (
                 <>
                     <div
@@ -363,4 +376,17 @@ export default Home
  * 
  * setup a species api ready to take name/id and then call.
  * after that, consecutively call another api from the results
+ */
+
+/**
+ * New team logic:
+ * 
+ * new api: call the all pokemon api with max limit: 1292
+ * or in serial after the allPokemon api once we get the pokeCount
+ * 
+ * a button opening a dropdown menu.
+ * In the menu, we got 1:arraylist, 2: button:Create new team.
+ * arrayList is the list of all the existing team
+ * 
+ * button:onClick:
  */

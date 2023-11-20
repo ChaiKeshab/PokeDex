@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom"
+import TeamPanel from './layout/TeamPanel'
 import { Home, MyTeam } from './pages/index'
 import { Link } from "react-router-dom"
 
@@ -10,6 +11,8 @@ const App = () => {
         <Link className="py-2 px-4 bg-gray-300 rounded-lg" to="/">Home</Link>
         <Link className="py-2 px-4 bg-gray-300 rounded-lg" to="/myteam">MyTeam</Link>
       </div>
+
+      <TeamPanel />
 
       <Routes>
         <Route path="/" element={<Home />} />

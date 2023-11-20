@@ -1,6 +1,7 @@
 
 const initialState = {
-    isModalOpen: false
+    isModalOpen: false,
+    isTeamPanelOpem: false
 }
 
 const modalReducer = (state = initialState, action) => {
@@ -16,6 +17,18 @@ const modalReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isModalOpen: false
+            }
+
+        case "IS_TEAM_PANEL_OPEN":
+            return {
+                ...state,
+                isTeamPanelOpem: true
+            }
+
+        case "IS_TEAM_PANEL_CLOSE":
+            return {
+                ...state,
+                isTeamPanelOpem: false
             }
 
         default:
