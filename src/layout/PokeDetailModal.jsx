@@ -96,12 +96,12 @@ const PokeDetailModal = ({
                     >
                         <FaArrowLeft className='text-base' />
                     </Button>
-
+                    {/* 
                     <Button
                         className='px-2 py-1 rounded-lg bg-blue-400 focus:bg-white focus:text-black'
                         onClick={() => dispatch(addPoke(addToTeamData))}
                         label={'Add to Team list'}
-                    />
+                    /> */}
                 </div>
 
                 {name &&
