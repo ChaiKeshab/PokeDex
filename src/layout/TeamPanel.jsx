@@ -4,7 +4,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import {
     isTeamPanelClose,
     isPokeListPanelOpen,
-    isPokeListPanelClose,
     createTeam,
     updateTeam,
     deleteTeam
@@ -19,6 +18,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
 import { MdDeleteSweep } from "react-icons/md";
+import { pokeball } from '../assets/index'
 
 import PokeListPanel from './PokeListPanel'
 
@@ -34,28 +34,14 @@ const TeamPanel = () => {
     const [teamInput, setTeamInput] = useState({})
     const [showInputField, setShowInputField] = useState({})
     const [selectedTeamId, setselectedTeamId] = useState('')
-
-
-    // const initialArray = myTeamListArr?.filter(team => team.id === selectedTeamId)
-    // const initialDisplay = initialArray[0]?.pokemons?.filter(team => team !== null)
-    // console.log(initialArray)
-
-    console.log(myTeamListArr)
+    const [imageLoaded, setImageLoaded] = useState(false);
+    console.log(imageLoaded)
 
     const allSelectedPoke = [...new Set(myTeamListArr?.flatMap(item => item.pokemons))]
         .filter(pokemon => pokemon !== null)
 
-    // console.log(allSelectedPoke)
-    /**
-     * send pokeURL of every selcted pokemon to this api
-     * 
-     * to display correct data, we use the initialArray and pokemonName as id
-     * if initialArray.name matches with pokeData.name, we use the pokemon image
-     * 
-     * 
-     * parallal queries? so,
-     * create an array of all the selected pokemon URL and then useQueries
-     */
+
+
     const baseURL = import.meta.env.VITE_BASE_URL
 
     const pokeData = useQueries({
@@ -68,8 +54,6 @@ const TeamPanel = () => {
                 }
             }) : [],
     })
-    console.log(pokeData)
-
 
 
 
@@ -115,9 +99,9 @@ const TeamPanel = () => {
                 md:px-6 md:w-2/3 lg:w-[50%] xl:1/3`}
             >
 
-                <div className="h-[9vh] flex justify-between border-b mb-2">
+                <div className="h-[9vh] w-full border-b mb-2">
 
-                    <h1 className="w-1/2 py-6 text-xl h-full">Configure Team ({myTeamListArr.length})</h1>
+                    <h1 className="w-full py-6 text-xl h-full">Configure Team ({myTeamListArr.length})</h1>
 
                 </div>
 
@@ -187,33 +171,7 @@ const TeamPanel = () => {
 
 
 
-
-                                {/* here____________________________________________ */}
-
                                 <div className='flex gap-2 w-full justify-evenly'>
-                                    {/* {team.pokemons?.map((poke, index) => (
-
-                                        <div
-                                            key={index}
-                                            className=' border hover:border-gray-400 w-full aspect-[9/10]'
-                                            onClick={() => PokeListPanelControl()}
-                                        >
-                                            {console.log(poke)}
-
-                                            {!poke ? (
-                                                <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
-                                            ) :
-                                                <>
-                                                    <div>{poke}</div>
-                                                    
-                                                    {pokeData?.filter((pokeInfo, index) => (
-                                                        pokeInfo.data?.name === poke
-                                                    ))}
-                                                </>
-                                            }
-                                        </div>
-
-                                    ))} */}
 
                                     {team.pokemons?.map((poke, index) => (
                                         <div
@@ -221,41 +179,63 @@ const TeamPanel = () => {
                                             className='border hover:border-gray-400 w-full aspect-[9/10]'
                                             onClick={() => PokeListPanelControl()}
                                         >
-                                            {poke ? (
-                                                pokeData?.map((pokeInfo, pokeIndex) => {
-                                                    if (pokeInfo.data?.name === poke) {
-                                                        return (
-                                                            <React.Fragment key={pokeIndex}>
-                                                                {/* <div>{poke}</div> */}
-                                                                {pokeInfo.data?.sprites?.other.dream_world.front_default ? (
-                                                                    <img
-                                                                        src={pokeInfo.data?.sprites?.other.dream_world.front_default}
-                                                                        alt={poke}
-                                                                        className='w-full h-full p-2'
-                                                                    />
 
-                                                                ) : (
-                                                                    <img
-                                                                        src={pokeInfo.data?.sprites?.front_default}
-                                                                        alt={poke}
-                                                                        className='w-full h-full p-2'
-                                                                    />
-                                                                )}
-                                                            </React.Fragment>
-                                                        );
-                                                    }
-                                                    return null;
-                                                })
+                                            {poke ? (
+                                                pokeData ? (
+                                                    pokeData.map((pokeInfo, pokeIndex) => {
+
+
+                                                        // if (pokeInfo.isSuccess && pokeInfo.data) {
+                                                        //     return (
+                                                        //         <div key={pokeIndex} className='w-10'>
+                                                        //             <img className='p-1 object-contain object-center' src={pokeball} alt='loading' />
+                                                        //         </div>
+                                                        //     )
+                                                        // }
+
+                                                        if (pokeInfo.data?.name === poke) {
+                                                            return (
+                                                                <React.Fragment key={pokeIndex}>
+
+                                                                    {/* <div>{poke}</div> */}
+
+
+                                                                    {pokeInfo.data?.sprites?.other?.dream_world?.front_default ? (
+                                                                        <img
+                                                                            src={pokeInfo.data?.sprites?.other?.dream_world?.front_default}
+                                                                            alt={poke}
+                                                                            className='w-full h-full p-2'
+                                                                        />
+                                                                    ) : (
+                                                                        <img
+                                                                            src={pokeInfo.data?.sprites?.front_default}
+                                                                            alt={poke}
+                                                                            className='w-full h-full'
+                                                                        />
+                                                                    )
+                                                                    }
+
+
+                                                                </React.Fragment>
+                                                            )
+                                                        }
+
+                                                        return null;
+                                                    })
+                                                ) : (
+                                                    <>
+                                                        {/* if api fails */}
+                                                        <img className='p-1 object-contain object-center w-full h-full' src={pokeball} alt='loading' />
+                                                    </>
+                                                )
                                             ) : (
                                                 <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
                                             )}
                                         </div>
                                     ))}
 
+
                                 </div>
-
-
-
 
 
 
