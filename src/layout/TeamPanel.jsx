@@ -34,6 +34,7 @@ const TeamPanel = () => {
     const [teamInput, setTeamInput] = useState({})
     const [showInputField, setShowInputField] = useState({})
     const [selectedTeamId, setselectedTeamId] = useState('')
+    const [selectedTeamName, setselectedTeamName] = useState('')
 
     const allSelectedPoke = [...new Set(myTeamListArr?.flatMap(item => item.pokemons))]
         .filter(pokemon => pokemon !== null)
@@ -121,12 +122,17 @@ const TeamPanel = () => {
 
                             {togglePokeListPanel &&
                                 <PokeListPanel
+                                    teamName={selectedTeamName}
                                     id={selectedTeamId}
                                 />
                             }
 
                             <Button
-                                onClick={() => setselectedTeamId(team.id)}
+                                onClick={() => {
+                                    setselectedTeamId(team.id)
+                                    setselectedTeamName(team.teamName)
+                                }}
+
                                 className='group cursor-default focus:bg-gray-200 hover:bg-gray-100 flex flex-col border border-gray-400 gap-2 p-2'
                             >
 

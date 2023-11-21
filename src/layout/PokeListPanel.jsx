@@ -15,7 +15,7 @@ import { getPokemonAPI } from '../APIs/pokemonApi'
 import { RiDeleteBack2Fill } from "react-icons/ri";
 
 
-const TeamPanel = ({ id }) => {
+const TeamPanel = ({ id, teamName }) => {
 
     const dispatch = useDispatch()
     const togglePokeListPanel = useSelector((state) => state.modalToggleReducer.isPokeListPanelOpen)
@@ -92,7 +92,7 @@ const TeamPanel = ({ id }) => {
                 bg-white px-3 z-[45] fixed left-0 top-0 pb-10 h-screen shadow-2xl transform ease-in-out duration-500
                 w-2/3 md:px-6 md:w-2/3 lg:w-[50%] xl:1/3`}
             >
-                <h1>{id}</h1>
+                <h1 className='mt-3 text-2xl'>{teamName}</h1>
 
                 <div className="mt-5 h-[5vh] flex flex-col justify-between mb-2">
 
@@ -103,7 +103,7 @@ const TeamPanel = ({ id }) => {
                         placeholder={"Search..."}
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
-                        className='p-2 w-full rounded-lg'
+                        className='p-2 text-lg w-full rounded-lg'
                     />
                 </div>
 
