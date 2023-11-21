@@ -34,12 +34,17 @@ const TeamPanel = () => {
     const [teamInput, setTeamInput] = useState({})
     const [showInputField, setShowInputField] = useState({})
     const [selectedTeamId, setselectedTeamId] = useState('')
-    const [imageLoaded, setImageLoaded] = useState(false);
-    console.log(imageLoaded)
 
     const allSelectedPoke = [...new Set(myTeamListArr?.flatMap(item => item.pokemons))]
         .filter(pokemon => pokemon !== null)
 
+    const initialImageLoadedState = allSelectedPoke.reduce((acc, poke) => {
+        acc[poke] = true;
+        return acc;
+    }, {});
+
+
+    const [imageLoaded, setImageLoaded] = useState(initialImageLoadedState);
 
 
     const baseURL = import.meta.env.VITE_BASE_URL
@@ -185,22 +190,44 @@ const TeamPanel = () => {
                                                     pokeData.map((pokeInfo, pokeIndex) => {
 
 
-                                                        // if (pokeInfo.isSuccess && pokeInfo.data) {
-                                                        //     return (
-                                                        //         <div key={pokeIndex} className='w-10'>
-                                                        //             <img className='p-1 object-contain object-center' src={pokeball} alt='loading' />
-                                                        //         </div>
-                                                        //     )
-                                                        // }
+                                                        if (pokeInfo.isPending && (pokeIndex === index)) {
+                                                            return (
+                                                                <div key={pokeIndex} className='w-full h-full'>
+                                                                    <img className='p-1 object-contain object-center' src={pokeball} alt='loading' />
+                                                                </div>
+                                                            )
+                                                        }
 
                                                         if (pokeInfo.data?.name === poke) {
+                                                            const image = pokeInfo.data?.sprites?.other?.dream_world?.front_default
+                                                            const secondaryImage = pokeInfo.data?.sprites?.front_default
+                                                            const displayImage = image ? image : secondaryImage
+
                                                             return (
                                                                 <React.Fragment key={pokeIndex}>
 
                                                                     {/* <div>{poke}</div> */}
 
+                                                                    {!imageLoaded[pokeInfo.data?.name] ? (
+                                                                        <>
+                                                                            <img
+                                                                                className='hidden'
+                                                                                onLoad={() => setImageLoaded({
+                                                                                    ...imageLoaded,
+                                                                                    [pokeInfo.data?.name]: true
+                                                                                })}
 
-                                                                    {pokeInfo.data?.sprites?.other?.dream_world?.front_default ? (
+                                                                                src={displayImage}
+                                                                                alt='pokemon'
+                                                                            />
+                                                                            <img className='p-1 object-contain object-center w-full h-full' src={pokeball} alt='loading' />
+                                                                        </>
+                                                                    ) : (
+                                                                        <img className='p-1 object-contain object-center w-full h-full' src={displayImage} alt={'loading'} />
+                                                                    )}
+
+
+                                                                    {/* {pokeInfo.data?.sprites?.other?.dream_world?.front_default ? (
                                                                         <img
                                                                             src={pokeInfo.data?.sprites?.other?.dream_world?.front_default}
                                                                             alt={poke}
@@ -212,8 +239,7 @@ const TeamPanel = () => {
                                                                             alt={poke}
                                                                             className='w-full h-full'
                                                                         />
-                                                                    )
-                                                                    }
+                                                                    )} */}
 
 
                                                                 </React.Fragment>
