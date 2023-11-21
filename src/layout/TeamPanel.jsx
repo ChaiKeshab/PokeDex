@@ -196,7 +196,7 @@ const TeamPanel = () => {
                                                     pokeData.map((pokeInfo, pokeIndex) => {
 
 
-                                                        if (pokeInfo.isPending && (pokeIndex === index)) {
+                                                        if (pokeInfo.isPending && (pokeIndex === index) && (team.id === selectedTeamId)) {
                                                             return (
                                                                 <div key={pokeIndex} className='w-full h-full'>
                                                                     <img className='p-1 object-contain object-center' src={pokeball} alt='loading' />
