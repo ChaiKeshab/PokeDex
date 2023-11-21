@@ -26,7 +26,9 @@ const TeamPanel = ({ id }) => {
     const initialDisplay = initialArray.filter(team => team !== null)
 
     const [searchName, setSearchName] = useState('')
-    console.log(initialArray, initialDisplay)
+
+
+
 
     const { data: allPokemon } = useQuery({
         queryKey: ['catchThemALl', 0],
@@ -43,7 +45,10 @@ const TeamPanel = ({ id }) => {
 
     const allPokeName = allPokeData?.results.map((poke) => poke.name)
 
-    const filteredPoke = allPokeName.filter((name) => {
+
+
+
+    const filteredPoke = allPokeName?.filter((name) => {
         const formattedName = name.toLowerCase()
         return formattedName.includes(searchName.toLowerCase())
     })
@@ -52,8 +57,6 @@ const TeamPanel = ({ id }) => {
     const handleSavePoke = (selectedPoke) => {
 
         const currIndex = initialArray.findIndex((poke) => poke === null);
-
-        console.log(currIndex)
 
         const updatedArray = initialArray.map((poke, index) => {
             if (index === currIndex) {

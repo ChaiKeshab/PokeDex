@@ -80,13 +80,6 @@ const myTeamReducer = (state = initialState, action) => {
                 return { ...state, teamList: updatedTeamList };
             }
 
-
-
-        case ActionTypes.REMOVE_CART_ALL:
-            {
-                return { ...state, teamList: [] }
-            }
-
         default:
             return state;
     }
@@ -103,7 +96,6 @@ export default myTeamReducer;
                 const isPokeInList = state.teamList.findIndex((item) => item.id === id);
 
                 if (isPokeInList !== -1) {
-                    console.log('i got accepted')
 
                     state.teamList = state.teamList.map((item) => {
                         if (item.id !== id) return

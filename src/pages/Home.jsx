@@ -62,7 +62,7 @@ const Home = () => {
 
     let pokeURL
     if (genSelect === 'All') {
-        pokeURL = allPokemon?.results.map((poke) => poke.url)
+        pokeURL = allPokemon?.results.map((poke) => (`${baseURL}/pokemon/${poke.name}`))
     } else {
         pokeURL = genPokemon?.pokemon_species.map((genPoke) => (`${baseURL}/pokemon/${genPoke.name}`))
     }

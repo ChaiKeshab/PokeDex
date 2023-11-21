@@ -12,8 +12,8 @@ import {
 
 import { Button, Input } from '../components/index'
 
-import { useQuery } from '@tanstack/react-query'
-import { getPokemonAPI } from '../APIs/pokemonApi'
+import { useQueries } from '@tanstack/react-query'
+import { getSpecificPokemonAPI } from '../APIs/pokemonApi'
 
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
@@ -31,26 +31,45 @@ const TeamPanel = () => {
 
     const myTeamListArr = useSelector((state) => state.myTeamReducer.teamList, shallowEqual);
 
-
-    const [selectedTeamId, setselectedTeamId] = useState('')
     const [teamInput, setTeamInput] = useState({})
     const [showInputField, setShowInputField] = useState({})
+    const [selectedTeamId, setselectedTeamId] = useState('')
 
 
-    const { data: allPokemon } = useQuery({
-        queryKey: ['catchThemALl', 0],
-        queryFn: () => getPokemonAPI(0),
+    // const initialArray = myTeamListArr?.filter(team => team.id === selectedTeamId)
+    // const initialDisplay = initialArray[0]?.pokemons?.filter(team => team !== null)
+    // console.log(initialArray)
+
+    console.log(myTeamListArr)
+
+    const allSelectedPoke = [...new Set(myTeamListArr?.flatMap(item => item.pokemons))]
+        .filter(pokemon => pokemon !== null)
+
+    // console.log(allSelectedPoke)
+    /**
+     * send pokeURL of every selcted pokemon to this api
+     * 
+     * to display correct data, we use the initialArray and pokemonName as id
+     * if initialArray.name matches with pokeData.name, we use the pokemon image
+     * 
+     * 
+     * parallal queries? so,
+     * create an array of all the selected pokemon URL and then useQueries
+     */
+    const baseURL = import.meta.env.VITE_BASE_URL
+
+    const pokeData = useQueries({
+        queries: allSelectedPoke
+            ? allSelectedPoke.map((poke) => {
+                const url = (`${baseURL}/pokemon/${poke}`)
+                return {
+                    queryKey: ['pikachu', url],
+                    queryFn: () => getSpecificPokemonAPI(url),
+                }
+            }) : [],
     })
+    console.log(pokeData)
 
-    const pokeCount = allPokemon?.count
-
-    const { data: allPokeData, status: allPokeStatus } = useQuery({
-        queryKey: ['catchThemALl', pokeCount],
-        queryFn: () => getPokemonAPI(0, pokeCount),
-        enabled: !!pokeCount
-    })
-
-    const allPokeName = allPokeData?.results.map((poke) => poke.name)
 
 
 
@@ -90,8 +109,6 @@ const TeamPanel = () => {
 
     return (
         <>
-
-
             <div
                 className={`${toggleTeamPanel ? "translate-x-0" : "translate-x-full"} 
                 bg-white px-3 z-[15] fixed right-0 top-0 pb-10 h-screen w-full shadow-2xl transform ease-in-out duration-500
@@ -102,11 +119,6 @@ const TeamPanel = () => {
 
                     <h1 className="w-1/2 py-6 text-xl h-full">Configure Team ({myTeamListArr.length})</h1>
 
-                    {/* <div className="w-1/2 py-6 h-full inline-block text-end cursor-pointer"
-                        onClick={() => dispatch(isTeamPanelClose())}
-                    >
-                        <IoMdClose />
-                    </div> */}
                 </div>
 
 
@@ -174,19 +186,78 @@ const TeamPanel = () => {
                                 </div>
 
 
+
+
+                                {/* here____________________________________________ */}
+
                                 <div className='flex gap-2 w-full justify-evenly'>
-                                    {team.pokemons?.map((poke, index) => (
+                                    {/* {team.pokemons?.map((poke, index) => (
 
                                         <div
                                             key={index}
                                             className=' border hover:border-gray-400 w-full aspect-[9/10]'
                                             onClick={() => PokeListPanelControl()}
                                         >
-                                            <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
+                                            {console.log(poke)}
+
+                                            {!poke ? (
+                                                <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
+                                            ) :
+                                                <>
+                                                    <div>{poke}</div>
+                                                    
+                                                    {pokeData?.filter((pokeInfo, index) => (
+                                                        pokeInfo.data?.name === poke
+                                                    ))}
+                                                </>
+                                            }
                                         </div>
 
+                                    ))} */}
+
+                                    {team.pokemons?.map((poke, index) => (
+                                        <div
+                                            key={index}
+                                            className='border hover:border-gray-400 w-full aspect-[9/10]'
+                                            onClick={() => PokeListPanelControl()}
+                                        >
+                                            {poke ? (
+                                                pokeData?.map((pokeInfo, pokeIndex) => {
+                                                    if (pokeInfo.data?.name === poke) {
+                                                        return (
+                                                            <React.Fragment key={pokeIndex}>
+                                                                {/* <div>{poke}</div> */}
+                                                                {pokeInfo.data?.sprites?.other.dream_world.front_default ? (
+                                                                    <img
+                                                                        src={pokeInfo.data?.sprites?.other.dream_world.front_default}
+                                                                        alt={poke}
+                                                                        className='w-full h-full p-2'
+                                                                    />
+
+                                                                ) : (
+                                                                    <img
+                                                                        src={pokeInfo.data?.sprites?.front_default}
+                                                                        alt={poke}
+                                                                        className='w-full h-full p-2'
+                                                                    />
+                                                                )}
+                                                            </React.Fragment>
+                                                        );
+                                                    }
+                                                    return null;
+                                                })
+                                            ) : (
+                                                <CiSquarePlus className='text-gray-400 w-full h-full hover:text-gray-600 duration-300' />
+                                            )}
+                                        </div>
                                     ))}
+
                                 </div>
+
+
+
+
+
 
                             </Button>
 
@@ -238,26 +309,3 @@ const TeamPanel = () => {
 }
 
 export default TeamPanel
-
-/**
- * myTeam data format:
- * 
- * data = [
- *     {
- *      "id": "crypto.UUIT... something like that",
- *      "teamName": "Team A",
- *      "pokemons": [1, 2, 3, 4, 5, 6] 
- *    },
- *    {
- *      "id": "crypto.UUID... something like that",
- *      "teamName": "Team B",
- *      "pokemons": [7, 8, 9, 10, 11, 12]
- *    }                                  
- * ]
- * 
- * 
- * features:
- * 
- * display all data and each data of array should be editable 
- * 
- */
